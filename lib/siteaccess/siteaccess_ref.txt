@@ -1,0 +1,202 @@
+<style>
+  .add {
+    background-color: lightgreen;
+  }
+
+  table {
+    border: 1px solid gray;
+  }
+
+  table td,
+  th {
+    border: 1px solid gray;
+  }
+
+  .pending {
+    background-color: lightblue;
+  }
+
+  .failure {
+    background-color: salmon;
+    color: white;
+  }
+
+  .success {
+    background-color: lightgreen;
+  }
+
+  .partial {
+    background-color: lightcoral;
+  }
+
+  #tblSiteGroupsImport li {
+    list-style: none;
+  }
+</style>
+
+<iframe id="CsvExpFrame" style="display: none"></iframe>
+
+<div class="siteAccess">
+  <input style="width: 500px" data-bind="textInput: requestUri" />
+  <button type="button" data-bind="click: submitRequest">Submit</button>
+
+  <div>
+    <button type="button" data-bind="click: clickViewExportModal">
+      View for Export
+    </button>
+    <input type="file" name="" id="inputImportGroupsCsv" />
+    <button type="button" data-bind="click: clickViewImportModal">
+      Import
+    </button>
+    <table id="tblSiteGroups">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Users</th>
+          <th>Permissions</th>
+        </tr>
+      </thead>
+      <tbody data-bind="foreach: siteGroupsAssignments">
+        <tr>
+          <td data-bind="text: Member.Title"></td>
+          <td>
+            <ul data-bind="foreach: Member.Users.results">
+              <li data-bind="text: $root.formatUsersItem($data)"></li>
+            </ul>
+          </td>
+          <td>
+            <ul data-bind="foreach: RoleDefinitionBindings.results">
+              <li data-bind="text: Name"></li>
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <dialog id="dlgExportView">
+    <div>
+      <div>
+        <button type="button" data-bind="click: clickExportSiteGroups">
+          Export
+        </button>
+        <button type="button" data-bind="click: clickCloseExportModal">
+          Close
+        </button>
+      </div>
+      <div>
+        <label>
+          1 User Per Row:
+          <input type="checkbox" data-bind="checked: chkRowPerUser" />
+        </label>
+      </div>
+      <table id="tblSiteGroupsExport" class="table-export">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Users</th>
+            <!-- ko if: chkRowPerUser -->
+            <th>Email</th>
+            <!-- /ko -->
+            <th>Permissions</th>
+          </tr>
+        </thead>
+        <tbody
+          data-bind="foreach: {data: siteGroupsAssignments, as: 'groupAssignment'}"
+        >
+          <!-- ko if: $root.chkRowPerUser -->
+          <!-- ko foreach: {data: Member.Users.results, as: 'user' }-->
+          <tr>
+            <td data-bind="text: groupAssignment.Member.Title"></td>
+            <td data-bind="text: user.Title"></td>
+            <td data-bind="text: user.Email"></td>
+            <td></td>
+          </tr>
+          <!-- /ko -->
+          <!-- /ko -->
+          <!-- ko ifnot: $root.chkRowPerUser -->
+          <tr>
+            <td data-bind="text: Member.Title"></td>
+            <td data-bind="text: $root.formatUsersCellExport($data)"></td>
+            <td data-bind="text: $root.formatPermissionsCellExport($data)"></td>
+          </tr>
+          <!-- /ko -->
+        </tbody>
+      </table>
+    </div>
+  </dialog>
+  <dialog id="dlgImportView" data-bind="showModal: showImportModal">
+    <div>
+      <div>
+        <button type="button" data-bind="click: clickImportSiteGroups">
+          Import
+        </button>
+        <button type="button" data-bind="click: clickCloseImportModal">
+          Close
+        </button>
+      </div>
+      <table id="tblSiteGroupsImport" class="table-export">
+        <thead>
+          <tr>
+            <th><input type="checkbox" data-bind="checked: includeAll" /></th>
+            <th>Title</th>
+            <th>Users</th>
+            <th>Permissions</th>
+            <th>Status</th>
+            <th>Errors</th>
+          </tr>
+        </thead>
+        <tbody data-bind="foreach: importSiteGroupsValidationResults">
+          <tr>
+            <td>
+              <input type="checkbox" data-bind="checked: includeInImport" />
+            </td>
+            <td data-bind="text: title, css: {add: !existingGroup}"></td>
+            <td data-bind="">
+              New Users:
+              <ul data-bind="foreach: newStagedUsers">
+                <li data-bind="class: status">
+                  <span data-bind="text: userKey"></span>
+                  <span data-bind="text: msg"></span>
+                </li>
+              </ul>
+              Existing Users:
+              <ul data-bind="foreach: existingUsers">
+                <li data-bind="text: Title"></li>
+              </ul>
+            </td>
+            <td data-bind="">
+              New Perms:
+              <ul data-bind="foreach: newStagedRoleDefinitions">
+                <li data-bind="class: status">
+                  <span data-bind="text: roleDefinitionKey"></span>
+                  <span data-bind="text: msg"></span>
+                </li>
+              </ul>
+              Existing Perms:
+              <ul data-bind="foreach: existingRoleDefinitions">
+                <li data-bind="text: Name"></li>
+              </ul>
+            </td>
+            <td data-bind="text: status, class: status"></td>
+            <td data-bind="text: msg"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </dialog>
+</div>
+<!-- <script src="/sites/CGFS/Style Library/apps/wo/lib/knockout/knockout-3.5.1.js"></script> -->
+<script type="text/javascript" src="../Apps/_layouts/15/sp.runtime.js"></script>
+<script
+  type="text/javascript"
+  src="/_layouts/15/ScriptResx.ashx?name=sp.res&culture=en-us"
+></script>
+<script type="text/javascript" src="../Apps/_layouts/15/sp.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js"></script>
+
+<script
+  defer
+  type="module"
+  src="/sites/CGFS/Style Library/apps/cewps/lib/siteaccess/siteaccess.js"
+></script>
