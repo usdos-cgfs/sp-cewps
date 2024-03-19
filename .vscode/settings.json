@@ -1,0 +1,32 @@
+{
+  "deploy.reloaded": {
+    "packages": [
+      {
+        "name": "Version 2.0",
+        "description": "Package version 2.0",
+        "files": ["lib/**", "src/**", "assets/**"],
+        "exclude": ["**.md", "**.json"],
+
+        "deployOnSave": ["Audit Style Library", "WO Style Library"],
+        "removeOnChange": ["Audit Style Library", "WO Style Library"],
+        "syncWhenOpen": true
+      }
+    ],
+    "targets": [
+      {
+        "type": "local",
+        "name": "WO Style Library",
+        "description": "Style Library of http://cgfs16index1dev:25000/sites/CGFS",
+
+        "dir": "P:/Style Library/apps/cewps"
+      },
+      {
+        "type": "local",
+        "name": "Audit Style Library",
+        "description": "Style Library of http://cgfs16index1dev:31000/sites/CGFS",
+
+        "dir": "Q:/Style Library/apps/cewps"
+      }
+    ]
+  }
+}
