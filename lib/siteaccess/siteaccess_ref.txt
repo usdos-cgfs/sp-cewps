@@ -88,6 +88,10 @@
           1 User Per Row:
           <input type="checkbox" data-bind="checked: chkRowPerUser" />
         </label>
+        <label>
+          Username Only:
+          <input type="checkbox" data-bind="checked: chkUserNameOnly" />
+        </label>
       </div>
       <table id="tblSiteGroupsExport" class="table-export">
         <thead>
@@ -152,10 +156,23 @@
             </td>
             <td data-bind="text: title, css: {add: !existingGroup}"></td>
             <td data-bind="">
+              <!-- ko if: userkeysNotFound.length -->
+              Users Not Found:
+              <ul data-bind="foreach: userkeysNotFound">
+                <li data-bind="text: $data"></li>
+              </ul>
+              <!-- /ko -->
               New Users:
               <ul data-bind="foreach: newStagedUsers">
                 <li data-bind="class: status">
-                  <span data-bind="text: userKey"></span>
+                  <span data-bind="text: LoginName"></span>
+                  <span data-bind="text: msg"></span>
+                </li>
+              </ul>
+              Removed Users:
+              <ul data-bind="foreach: removedStagedUsers">
+                <li data-bind="class: status">
+                  <span data-bind="text: LoginName"></span>
                   <span data-bind="text: msg"></span>
                 </li>
               </ul>
