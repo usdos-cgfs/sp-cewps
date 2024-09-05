@@ -28,5 +28,7 @@
         "dir": "Q:/Style Library/apps/cewps"
       }
     ]
-  }
+  },  
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true
 }
